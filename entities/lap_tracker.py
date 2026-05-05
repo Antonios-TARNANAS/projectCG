@@ -21,6 +21,7 @@ class LapTracker:
 
         self.laps = 0
         self.lap_times = []
+        self._best_time = None        # NEW
         self.lap_start = time.time()
         self.finished = False
 
@@ -28,12 +29,9 @@ class LapTracker:
         self._cooldown = 0
         self._first_crossing_done = False
 
-        # Car must travel this far from the finish line before
-        # another crossing can count — prevents reversing exploit
         self._min_away_distance = 1200
         self._has_been_away = False
 
-        # Finish line midpoint for distance check
         fx1, fy1 = finish_line[0]
         fx2, fy2 = finish_line[1]
         self._finish_mid_x = (fx1 + fx2) / 2
@@ -47,7 +45,6 @@ class LapTracker:
             self._cooldown -= 1
             return
 
-        # Check if car has travelled far enough from the finish line
         dist = math.hypot(car_x - self._finish_mid_x, car_y - self._finish_mid_y)
         if dist > self._min_away_distance:
             self._has_been_away = True
@@ -67,22 +64,23 @@ class LapTracker:
 
             if going_correct:
                 if not self._first_crossing_done:
-                    # First crossing — arm the tracker and require the car
-                    # to travel away before counting anything
                     self._first_crossing_done = True
                     self._has_been_away = False
                     self._cooldown = 60
 
                 elif self._has_been_away:
-                    # Valid lap — car crossed correctly AND travelled the track
                     elapsed = time.time() - self.lap_start
                     self.lap_times.append(elapsed)
+
+                    # Update best time
+                    if self._best_time is None or elapsed < self._best_time:
+                        self._best_time = elapsed
+
                     self.lap_start = time.time()
                     self.laps += 1
-                    self._has_been_away = False  # must travel away again
+                    self._has_been_away = False
                     self._cooldown = 60
 
-                    # NEW — only finish after completing the full final lap
                     if self.total_laps and self.laps >= self.total_laps + 1:
                         self.finished = True
 
@@ -95,3 +93,6 @@ class LapTracker:
         if self.lap_times:
             return self.lap_times[-1]
         return None
+
+    def best_lap_time(self):
+        return self._best_time

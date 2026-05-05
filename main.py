@@ -2,8 +2,10 @@ import pygame
 import sys
 from settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, TITLE
 from entities.player import Player
+from entities.car import resolve_car_collision
 from data.maps_registry import MAPS
 from ui.menu import menu_screen, winner_screen
+from ui.car_select import car_select_screen
 from ui.hud import draw_hud
 
 
@@ -15,7 +17,7 @@ def parse_args():
     return layout
 
 
-def run_race(screen, config, layout):
+def run_race(screen, config, layout, selected_cars):
     clock = pygame.time.Clock()
 
     current_map = MAPS[0]()
@@ -28,18 +30,14 @@ def run_race(screen, config, layout):
     total_laps = config["laps"] if mode == "fixed" else None
 
     player1 = Player(1, current_map.start_positions[0], current_map.start_angle,
-                     finish_line, total_laps, layout=layout)
+                     finish_line, total_laps, selected_cars[0], layout=layout)
 
     player2 = None
     if num_players == 2:
         player2 = Player(2, current_map.start_positions[1], current_map.start_angle,
-                         finish_line, total_laps)
+                         finish_line, total_laps, selected_cars[1])
 
-    # Split screen or full screen depending on player count
-    if num_players == 2:
-        view_w = SCREEN_WIDTH // 2
-    else:
-        view_w = SCREEN_WIDTH
+    view_w = SCREEN_WIDTH // 2 if num_players == 2 else SCREEN_WIDTH
     view_h = SCREEN_HEIGHT
 
     surface_p1 = pygame.Surface((view_w, view_h))
@@ -51,7 +49,7 @@ def run_race(screen, config, layout):
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                return  # back to menu
+                return
 
         keys = pygame.key.get_pressed()
 
@@ -59,7 +57,10 @@ def run_race(screen, config, layout):
         if player2:
             player2.update(keys, outer, inner, view_w, view_h)
 
-        # Check for winner
+        # Car to car collision
+        if player2:
+            resolve_car_collision(player1.car, player2.car)
+
         if mode == "fixed":
             if player1.lap_tracker.finished:
                 winner_screen(screen, player1.label)
@@ -68,7 +69,6 @@ def run_race(screen, config, layout):
                 winner_screen(screen, player2.label)
                 return
 
-        # Draw P1 view
         surface_p1.fill((30, 120, 30))
         current_map.draw(surface_p1, player1.camera_x, player1.camera_y)
         player1.draw(surface_p1, player1.camera_x, player1.camera_y)
@@ -77,7 +77,6 @@ def run_race(screen, config, layout):
         draw_hud(surface_p1, player1, mode)
         screen.blit(surface_p1, (0, 0))
 
-        # Draw P2 view
         if player2 and surface_p2:
             surface_p2.fill((30, 120, 30))
             current_map.draw(surface_p2, player2.camera_x, player2.camera_y)
@@ -100,7 +99,8 @@ def main():
 
     while True:
         config = menu_screen(screen)
-        run_race(screen, config, layout)
+        selected_cars = car_select_screen(screen, config["players"])
+        run_race(screen, config, layout, selected_cars)
 
 
 if __name__ == "__main__":
