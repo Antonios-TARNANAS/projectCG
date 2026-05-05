@@ -11,6 +11,11 @@
 │   ├── map_base.py      ← base Map class (draw road, walls, finish line)
 │   ├── map_01.py        ← first track (you give me the layout, I code it)
 │   └── map_02.py        ← future maps follow same pattern
+|
+├── ui/
+│   ├── car select.py    
+│   ├── hud.py        
+│   └── menu.py        
 │
 └── data/
     ├── cars.py          ← list of car configs (speed, handling, acceleration)
@@ -18,5 +23,24 @@
 ```
 
 
+Interpreter python 3.12
 
+```
+python -m pip install --upgrade pip
+```
 
+```
+pip install pygame
+```
+
+```
+python main.py # defaults to zqsd
+```
+
+```
+python main.py -zqsd    # explicit zqsd
+```
+
+```
+python main.py -wasd    # explicit wasd
+```
