@@ -1,4 +1,4 @@
-racing_game/
+```racing_game/
 │
 ├── main.py              ← entry point, game loop
 ├── settings.py          ← colors, screen size, FPS, constants
@@ -14,7 +14,7 @@ racing_game/
 │
 └── data/
     ├── cars.py          ← list of car configs (speed, handling, acceleration)
-    └── maps_registry.py ← list of available maps
+    └── maps_registry.py ← list of available maps```
 
 
 
