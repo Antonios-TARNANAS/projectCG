@@ -18,8 +18,15 @@
 ```
 
 
-Interpreter pythn 3.12
+Interpreter python 3.12
 
+```
+python -m pip install --upgrade pip
+```
+
+```
+pip install pygame
+```
 
 
 
