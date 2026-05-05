@@ -12,6 +12,10 @@
 │   ├── map_01.py        ← first track (you give me the layout, I code it)
 │   └── map_02.py        ← future maps follow same pattern
 │
+├── ui/
+│   ├── hud.py      ← base Map class (draw road, walls, finish line)
+│   └── menu.py        ← future maps follow same pattern
+│
 └── data/
     ├── cars.py          ← list of car configs (speed, handling, acceleration)
     └── maps_registry.py ← list of available maps
