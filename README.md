@@ -28,6 +28,16 @@ python -m pip install --upgrade pip
 pip install pygame
 ```
 
+```
+python main.py # defaults to zqsd
+```
 
+```
+python main.py -zqsd    # explicit zqsd
+```
+
+```
+python main.py -wasd    # explicit wasd
+```
 
 
